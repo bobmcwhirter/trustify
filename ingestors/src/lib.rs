@@ -1,4 +1,5 @@
 pub mod cve;
+use sea_orm::error::DbErr;
 
 pub mod hashing;
 
@@ -8,6 +9,8 @@ pub enum Error {
     Json(serde_json::Error),
     #[error(transparent)]
     Graph(trustify_graph::graph::error::Error),
+    #[error(transparent)]
+    Db(DbErr),
 }
 
 impl From<serde_json::Error> for Error {
@@ -19,5 +22,11 @@ impl From<serde_json::Error> for Error {
 impl From<trustify_graph::graph::error::Error> for Error {
     fn from(value: trustify_graph::graph::error::Error) -> Self {
         Self::Graph(value)
+    }
+}
+
+impl From<DbErr> for Error {
+    fn from(value: DbErr) -> Self {
+        Self::Db(value)
     }
 }
